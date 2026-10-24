@@ -11,5 +11,6 @@
 ______
 **Process of writing a docker file**
 
-- exp 1-------------
-- exp 2--------
+A dockerfile is a sequential lines of instructions or a linear script.
+- The Base Image : Dockerfile starts with a `FROM` instruction.
+ What `FROM` does --> The `FROM` instruction tells Docker which existing template to download and start with. Docker has a public hub (Docker Hub) with ready-to-use base images maintained by official groups. 
