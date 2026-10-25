@@ -12,11 +12,18 @@ ______
 **Process of writing a docker file**
 
 A dockerfile is a sequential lines of instructions or a linear script.
-- **The Base Image** : Dockerfile starts with a `FROM` instruction.
+- **The Base Image**(**Foundation**) : Dockerfile starts with a `FROM` instruction.
  What `FROM` does --> The `FROM` instruction tells Docker which existing template to download and start with. Docker has a public hub (Docker Hub) with ready-to-use base images maintained by official groups.
+
 **Example**: `FROM golang:1.23-alpine`
 
-- **Environment & Working Directory Setup** : This section prepared the containers internal environment before the files are copied or installed. Set the current working directory for actions like (COPY or RUN)
+- **Environment & Working Directory Setup**(**workspace**) : This section prepared the containers internal environment before the files are copied or installed. Set the current working directory for actions like (COPY or RUN)
+
 **Example**: `WORKDIR /APP`
 
-  - 
+- **Dependencies & File Ingestion (Build stage)** : 
+This is where external dependencies are installed and source code is brought into the container. To maximize layer caching, dependency files are usually copied and installed before the main source code.
+
+**Example**:
+`COPY go.mod go.sum ./`
+`RUN go mod download`
