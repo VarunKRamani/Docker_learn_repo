@@ -12,5 +12,55 @@ ______
 **Process of writing a docker file**
 
 A dockerfile is a sequential lines of instructions or a linear script.
-- The Base Image : Dockerfile starts with a `FROM` instruction.
- What `FROM` does --> The `FROM` instruction tells Docker which existing template to download and start with. Docker has a public hub (Docker Hub) with ready-to-use base images maintained by official groups. 
+- **The Base Image**(**Foundation**) : Dockerfile starts with a `FROM` instruction.
+ What `FROM` does --> The `FROM` instruction tells Docker which existing template to download and start with. Docker has a public hub (Docker Hub) with ready-to-use base images maintained by official groups.
+
+**Example**: `FROM golang:1.23-alpine`
+
+- **Environment & Working Directory Setup**(**workspace**) : This section prepared the containers internal environment before the files are copied or installed. Set the current working directory for actions like (COPY or RUN)
+
+**Example**: `WORKDIR /APP`
+
+- **Dependencies & File Ingestion (Build stage)** : 
+This is where external dependencies are installed and source code is brought into the container. To maximize layer caching, dependency files are usually copied and installed before the main source code.
+
+**Example**:
+`COPY go.mod go.sum ./`
+`RUN go mod download`
+
+- **Runtime Configuration**: There instructions define how containers must behave once they are finally instantiated and run.
+`EXPOSE`: Documents which network port the application listens on.
+`CMD`: Defines the executable command that runs when the container starts.
+
+**Example**:
+`EXPOSE 8080`
+`CMD ["./myapp"]`
+
+______________
+# A Simple Dockerfile for a Go Application 
+
+```
+# 1. Start with an official Go image to build the app
+FROM golang:1.23-alpine
+
+# 2. Create and set the working directory inside the container
+WORKDIR /app
+
+# 3. Copy dependency files first to take advantage of caching
+COPY go.mod go.sum ./
+
+# 4. Download all Go modules/dependencies
+RUN go mod download
+
+# 5. Copy the rest of your application source code into the container
+COPY . .
+
+# 6. Build the Go application into an executable binary file
+RUN go build -o myapp .
+
+# 7. Tell Docker which network port the application listens on
+EXPOSE 8080
+
+# 8. Define the default command to run when the container starts
+CMD ["./myapp"]
+
