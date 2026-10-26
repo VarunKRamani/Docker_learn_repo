@@ -91,3 +91,15 @@ CMD ["python", "main.py"]
 ````
 - `python:3.11-slim`: A lightweight version of python to keep the container size small and has everything needed to run python.
 - `--no-cache-dir`: Tells `pip` to not keep downloaded packages within the container saving dick space.
+
+_______
+# **Issues with Single-Stage Builds**
+When we use a single-stage Dockerfile, everything happens in one container environment from start to finish. This creates several major technical drawbacks:
+
+- **Massive Image Bloat**: To build an app (like Go, Java, or Node.js), **we need heavy SDKs, compilers, package managers (npm, pip, mvn)**, and source code files. In a single-stage build, all of those **bulky tools remain baked into the final image**. A Go app that compiles down to a 20MB binary might end up sitting inside a 1GB+ container image because the entire Go SDK is dragged along.
+
+- **Slow CI/CD Pipelines and Scaling**: Large image sizes take longer to build, longer to push/pull to container registries (like Docker Hub or ECR), and longer to download onto cloud nodes when Kubernetes or Docker Swarm tries to scale up pods. This introduces lag into your deployment pipeline.
+
+- **Risk of Leaking Sensitive Files**: Single-stage builds often require copying our entire local directory (COPY . .) into the container. This can accidentally bake in sensitive files like local configuration configs, .env files, git history, or test scripts into your production artifact.
+
+**Why We Need Multi-Stage Builds: Multi-stage builds were introduced to solve these exact problems by cleanly separating the build environment from the runtime environment within a single Dockerfile.**
