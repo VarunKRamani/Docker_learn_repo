@@ -27,3 +27,32 @@ This is where external dependencies are installed and source code is brought int
 **Example**:
 `COPY go.mod go.sum ./`
 `RUN go mod download`
+
+______________
+# A Simple Dockerfile for a Go Application 
+
+```
+# 1. Start with an official Go image to build the app
+FROM golang:1.23-alpine
+
+# 2. Create and set the working directory inside the container
+WORKDIR /app
+
+# 3. Copy dependency files first to take advantage of caching
+COPY go.mod go.sum ./
+
+# 4. Download all Go modules/dependencies
+RUN go mod download
+
+# 5. Copy the rest of your application source code into the container
+COPY . .
+
+# 6. Build the Go application into an executable binary file
+RUN go build -o myapp .
+
+# 7. Tell Docker which network port the application listens on
+EXPOSE 8080
+
+# 8. Define the default command to run when the container starts
+CMD ["./myapp"]
+
