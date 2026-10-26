@@ -14,12 +14,21 @@ Simply put, it lets us use a heavy image with all our compilers and tools to bui
 
 - **Minimalist Production Artifacts**: We copy only the compiled binary or final asset across stages, throwing away gigabytes of compilers and source code.
 
-___________
+___
 
 ## Writing a Multi-stage Dockerfile
 
-A multi-Stage dockerfile mainly has two stages, namely: Building stage/**Build stage** and **Runtime stage**
+A Multi-Stage Dockerfile mainly has two stages, namely: **Build stage** and **Runtime stage**
 
-Build Stage: 
+**Build Stage**: Starting with fully loaded base image with compliers, tools and label it using `AS Builder`. Copy the Source code and run compilation or  packaging commands in this stage.
 
-Runtime Stage:
+**Example**: `Golang:1.23-alpine AS Builder`
+
+**Runtime Stage**: Create a new block with tiny and clean base image. Use `COPY --from=Builder` to only copy the finished binary or file into this clean image and define the execution commands like `CMD`. 
+
+**Example**: `FROM alpine:latest`
+
+___
+
+
+
