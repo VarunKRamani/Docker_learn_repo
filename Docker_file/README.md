@@ -28,6 +28,14 @@ This is where external dependencies are installed and source code is brought int
 `COPY go.mod go.sum ./`
 `RUN go mod download`
 
+- **Runtime Configuration**: There instructions define how containers must behave once they are finally instantiated and run.
+`EXPOSE`: Documents which network port the application listens on.
+`CMD`: Defines the executable command that runs when the container starts.
+
+**Example**:
+`EXPOSE 8080`
+`CMD ["./myapp"]`
+
 ______________
 # A Simple Dockerfile for a Go Application 
 
