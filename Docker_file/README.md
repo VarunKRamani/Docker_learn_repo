@@ -37,10 +37,10 @@ This is where external dependencies are installed and source code is brought int
 `CMD ["./myapp"]`
 
 ______________
-# A Simple Dockerfile for a Go Application 
+# A Dockerfile for a Go Application 
 
 ```
-# 1. Start with an official Go image to build the app
+# 1. Starting with an official Go image to build the app
 FROM golang:1.23-alpine
 
 # 2. Create and set the working directory inside the container
@@ -63,4 +63,31 @@ EXPOSE 8080
 
 # 8. Define the default command to run when the container starts
 CMD ["./myapp"]
+```
+____________
+# A Dockerfile for a Python Application 
 
+````
+# 1. Start with an official Python base image
+FROM python:3.11-slim
+
+# 2. Set the working directory inside the container
+WORKDIR /app
+
+# 3. Copy the dependencies file into the container
+COPY requirements.txt .
+
+# 4. Install the Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 5. Copy the rest of your application source code into the container
+COPY . .
+
+# 6. Tell Docker which network port the application listens on (change if needed, e.g., 5000 for Flask)
+EXPOSE 8000
+
+# 7. Define the default command to run your Python app
+CMD ["python", "main.py"]
+````
+- `python:3.11-slim`: A lightweight version of python to keep the container size small and has everything needed to run python.
+- `--no-cache-dir`: Tells `pip` to not keep downloaded packages within the container saving dick space.
