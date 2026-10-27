@@ -72,9 +72,34 @@ CMD ["./myapp"]
 - `GOOS=linux` --> Tells the Go compiler to target the Linux operating system. If you ever build your Docker image from a Mac or Windows machine, this ensures the resulting binary is built specifically for Linux containers.
 
 ___
-**Multi-Stage Dockerfile for a ____  Application**
-
+**Multi-Stage Dockerfile for a nodejs Application**
 
 ```
-Code ---------!@#$%^&*()
+# --- STAGE 1: Build Stage ---
+# Use a full Node image to install packages and build
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Copy package files and install all dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy source code and build (if using a bundler/TypeScript)
+COPY . .
+RUN npm run build
+
+# --- STAGE 2: Runtime Stage ---
+# Start fresh with a clean Node runtime image
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# Copy package files and install ONLY production dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy the built output from the builder stage
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+CMD ["node", "dist/index.js"]
 ```
