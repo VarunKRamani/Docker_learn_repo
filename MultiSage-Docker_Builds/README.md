@@ -32,27 +32,49 @@ ___
 
 **A Multi-stage Dockerfile for a Go application**
 
-
 ```
 #Stage 1 - build stage --------------------------------
 FROM golang:1.23-alpine AS builder
 
+# Set the work directory
 WORKDIR /app
 
+# Download the dependencies
 COPY go.mod go.sum ./
 RUN go mod download
 
+# Copy the source code
 COPY . .
+
+# Build the binary     
 RUN CGO_ENABLED=0 GOOS=linux go build -o myapp .
 
 #stage 2 - Run stage ------------------------------------
 
+# start fresh with lightweight alpine image
 FROM alpine:latest
+
+# Set the work directory 
 WORKDIR /root/
 
+# copy the compiled binary from the builder stage to this fresh image
 COPY --from=builder /app/myapp .
 
-EXPOSE = 8080
-CMD ["./myapp"]
+# application listens for incoming traffic on port 8080
+EXPOSE 8080
 
+# Application starts running, and begins listening on the set port.
+CMD ["./myapp"]
+```
+**Note**
+- `CGO_ENABLED=0` --> Disables CGO, which is the mechanism Go uses to call C/C++ libraries. By setting this to 0, you force Go to create a 100% statically linked binary. This means the compiled executable contains everything it needs inside itself and doesn't rely on external C libraries (like libc) from the host operating system.
+
+- `GOOS=linux` --> Tells the Go compiler to target the Linux operating system. If you ever build your Docker image from a Mac or Windows machine, this ensures the resulting binary is built specifically for Linux containers.
+
+___
+**Multi-Stage Dockerfile for a ____  Application**
+
+
+```
+Code ---------!@#$%^&*()
 ```
