@@ -105,7 +105,7 @@ CMD ["node", "dist/index.js"]
 ```
 _____
 
-Multi-stage Dockerfile for a Java application
+**Multi-stage Dockerfile for a Java application**
 
 ```
 # --- STAGE 1: Build Stage ---
@@ -131,4 +131,31 @@ COPY --from=builder /app/target/myapp.jar app.jar
 EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]
 ```
+______
+**A Multi-stage Dockerfile for a Python application**
 
+```
+# --- STAGE 1: Build the packages ---
+FROM python:3.11-slim AS builder
+WORKDIR /app
+
+# Install dependencies into a separate folder (/opt/venv)
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# --- STAGE 2: Run the app ---
+FROM python:3.11-slim
+WORKDIR /app
+
+# Copy ONLY the installed packages from Stage 1
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy your actual Python code
+COPY . .
+
+EXPOSE 8000
+CMD ["python", "main.py"]
+```
