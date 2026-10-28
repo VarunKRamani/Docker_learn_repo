@@ -103,3 +103,32 @@ COPY --from=builder /app/dist ./dist
 EXPOSE 3000
 CMD ["node", "dist/index.js"]
 ```
+_____
+
+Multi-stage Dockerfile for a Java application
+
+```
+# --- STAGE 1: Build Stage ---
+# Use a heavy Maven + JDK image to compile the app
+FROM maven:3.9-eclipse-temurin-21 AS builder
+WORKDIR /app
+
+# Copy project configuration and source files
+COPY pom.xml .
+COPY src ./src
+
+# Build the project and package into a JAR file (skipping tests)
+RUN mvn clean package -DskipTests
+
+# --- STAGE 2: Runtime Stage ---
+# Start fresh with a lightweight JRE runtime image
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+# Copy ONLY the compiled JAR file from the builder stage
+COPY --from=builder /app/target/myapp.jar app.jar
+
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
+```
+
