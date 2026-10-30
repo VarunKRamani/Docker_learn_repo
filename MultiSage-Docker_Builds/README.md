@@ -66,6 +66,8 @@ EXPOSE 8080
 # Application starts running, and begins listening on the set port.
 CMD ["./myapp"]
 ```
+<img width="700" height="350" alt="GO_app_docker_file" src="https://github.com/user-attachments/assets/e83aa606-2dc9-4743-9ebf-bff87f449205" />
+
 **Note**
 - `CGO_ENABLED=0` --> Disables CGO, which is the mechanism Go uses to call C/C++ libraries. By setting this to 0, you force Go to create a 100% statically linked binary. This means the compiled executable contains everything it needs inside itself and doesn't rely on external C libraries (like libc) from the host operating system.
 
